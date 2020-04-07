@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-__all__ = ['aligner', 'fixer', 'hasher', 'ornamentRecognizer', 'search',
-           'testFiles']
+__all__ = ['aligner', 'fixer', 'hasher', 'omrMidiCorrector', 'omrMidiCorrectorDemo',
+           'ornamentRecognizer', 'search', 'shifter', 'testFiles']
 
 from music21.alpha.analysis import aligner
 from music21.alpha.analysis import fixer
