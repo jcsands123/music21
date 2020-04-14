@@ -437,7 +437,7 @@ class OrnamentFixer(OMRMidiFixer):
         if not inPlace:
             return TrillFixer(sa.changes, sa.targetStream, sa.sourceStream)
 
-def getNotesWithinDuration(startingGeneralNote, totalDuration, referenceStream=None):
+def getNotesWithinDuration(startingGeneralNote, totalDuration, referenceStream=None, returnOrig = False):
     '''
     Returns maximal stream of deepcopies of notes, rests, and chords following
     (and including) startingNote which occupy no more than totalDuration combined.
@@ -448,7 +448,8 @@ def getNotesWithinDuration(startingGeneralNote, totalDuration, referenceStream=N
         active site should be set to when provided
     '''
     if referenceStream:
-        startingGeneralNote.activeSite = referenceStream
+        container = referenceStream.containerInHierarchy(startingGeneralNote)
+        startingGeneralNote.activeSite = container
 
     notes = stream.Stream()
 
@@ -458,14 +459,20 @@ def getNotesWithinDuration(startingGeneralNote, totalDuration, referenceStream=N
 
     durationQlLeft = totalDuration.quarterLength - startingGeneralNote.duration.quarterLength
     nextGeneralNote = startingGeneralNote.next('GeneralNote', activeSiteOnly=True)
-    notes.append(deepcopy(startingGeneralNote))
+    if returnOrig:
+        notes.append(startingGeneralNote)
+    else:
+        notes.append(deepcopy(startingGeneralNote))
 
     while nextGeneralNote and durationQlLeft >= nextGeneralNote.duration.quarterLength:
         currentGeneralNote = nextGeneralNote
         nextGeneralNote = currentGeneralNote.next('GeneralNote', activeSiteOnly=True)
 
         durationQlLeft -= currentGeneralNote.duration.quarterLength
-        notes.append(deepcopy(currentGeneralNote))
+        if returnOrig:
+            notes.append(currentGeneralNote)
+        else:
+            notes.append(deepcopy(currentGeneralNote))
 
     return notes
 
